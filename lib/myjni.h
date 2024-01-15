@@ -4,6 +4,10 @@
 #include <jni.h>
 #include <android/log.h>
 
+#ifndef JNI_FUNC
+#define JNI_FUNC(ret, name) JNIEXPORT ret JNICALL Java_dev_danielc_us_MainActivity_##name
+#endif
+
 #if defined(__arm__)
 #if defined(__ARM_ARCH_7A__)
 #if defined(__ARM_NEON__)

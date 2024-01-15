@@ -77,8 +77,14 @@ struct uiSeparator { struct uiAndroidControl c; };
 struct uiMultilineEntry { struct uiAndroidControl c; };
 struct uiEntry { struct uiAndroidControl c; };
 struct uiForm { struct uiAndroidControl c; };
+struct uiScroll { struct uiAndroidControl c; };
+
+typedef struct uiScroll uiScroll;
+struct uiScroll *uiNewScroll();
 
 int uiAndroidInit(JNIEnv *env, jobject context);
 uiBox *uiAndroidBox(JNIEnv *env, jobject context, jobject parent);
+
+void uiAndroidSetContent(uiControl *c);
 
 #endif

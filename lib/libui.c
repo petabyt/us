@@ -125,6 +125,18 @@ static void view_set_view_text(jobject view, const char *text) {
 	(*env)->CallVoidMethod(env, view, method, (*uilib.env)->NewStringUTF(uilib.env, text));
 }
 
+struct uiScroll *uiNewScroll() {
+	struct uiAndroidControl *c = new_view_control(uiBoxSignature);
+
+	JNIEnv *env = uilib.env;
+	jclass class = (*env)->FindClass(env, "android/widget/ScrollView");
+	jmethodID constructor = (*env)->GetMethodID(env, class, "<init>", "(Landroid/content/Context;)V");
+	jobject obj = (*env)->NewObject(env, class, constructor, uilib.ctx);
+
+	c->o = obj;
+	return (uiScroll *)c;
+}
+
 static struct uiAndroidControl *view_new_separator() {
 	struct uiAndroidControl *c = new_view_control(uiSeparatorSignature);
 
