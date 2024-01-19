@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -28,6 +29,8 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Space;
+import android.widget.TabHost;
+import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,19 +42,16 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
-
-import com.google.android.material.tabs.TabLayout;
-
 import java.util.ArrayList;
+
+import dev.danielc.us.MainActivity;
 
 public class LibUI {
     public static Context ctx = null;
     public static ActionBar actionBar = null;
 
     // uiWindow (popup) background drawable style resource
-    public static int popupDrawableResource = 0;
+    private static int popupDrawableResource = 0;
 
     // Background drawable resource for buttons
     public static int buttonBackgroundResource = 0;
@@ -75,7 +75,7 @@ public class LibUI {
         });
     }
 
-    private static void init() {
+    public static void init() {
         if (useActionBar) {
             actionBar = ((AppCompatActivity)ctx).getSupportActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -86,7 +86,7 @@ public class LibUI {
         actionBar.setTitle(title);
     }
 
-    public static class MyFragment extends Fragment {
+    private static class MyFragment extends Fragment {
         ViewGroup view;
         MyFragment(ViewGroup v) {
             view = v;
@@ -98,29 +98,7 @@ public class LibUI {
         }
     }
 
-    public static class MyFragmentStateAdapter extends FragmentStateAdapter {
-        private ArrayList<ViewGroup> arrayList = new ArrayList<>();
-        public MyFragmentStateAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
-            super(fragmentManager, lifecycle);
-        }
-
-        public void addViewGroup(ViewGroup vg) {
-            arrayList.add(vg);
-        }
-
-        @NonNull
-        @Override
-        public Fragment createFragment(int position) {
-            return new MyFragment(arrayList.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return arrayList.size();
-        }
-    }
-
-    public static class MyOnClickListener implements View.OnClickListener {
+    private static class MyOnClickListener implements View.OnClickListener {
         private long ptr;
         private long arg1;
         private long arg2;
@@ -205,73 +183,38 @@ public class LibUI {
     }
 
     public static View tabLayout() {
-        LinearLayout layout = new LinearLayout(ctx);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setLayoutParams(new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT,
-                1.0f
-        ));
+        TabHost tabHost = new TabHost(ctx, null);
+        tabHost.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-        TabLayout tl = new TabLayout(ctx);
-        tl.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+        LinearLayout linearLayout = new LinearLayout(ctx);
+        linearLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-        ViewPager2 pager = new ViewPager2(ctx);
-        pager.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
+        TabWidget tabWidget = new TabWidget(ctx);
+        tabWidget.setId(android.R.id.tabs);
 
-        MyFragmentStateAdapter frag = new MyFragmentStateAdapter(
-                ((AppCompatActivity)ctx).getSupportFragmentManager(),
-                ((AppCompatActivity)ctx).getLifecycle()
-        );
-        pager.setAdapter(frag);
+        FrameLayout frameLayout = new FrameLayout(ctx);
+        frameLayout.setId(android.R.id.tabcontent);
 
-        tl.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                pager.setCurrentItem(tab.getPosition());
-            }
+        linearLayout.addView(tabWidget);
+        linearLayout.addView(frameLayout);
+        tabHost.addView(linearLayout);
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
+        tabHost.setup();
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-
-        pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                tl.selectTab(tl.getTabAt(position));
-            }
-        });
-
-        layout.addView(tl);
-        layout.addView(pager);
-
-        return layout;
+        return tabHost;
     }
 
-    private static void addTab(View parent, String name, View child) {
-        // TabLayout is child 0, add a new tab
-        TabLayout tl = (TabLayout)(((ViewGroup)parent).getChildAt(0));
-        TabLayout.Tab tab = tl.newTab();
-        tab.setText(name);
-        tl.addTab(tab);
-
-        // ViewPager2 is the second child, we can get the custom fragment adapter from it
-        ViewPager2 vp = (ViewPager2)(((ViewGroup)parent).getChildAt(1));
-        MyFragmentStateAdapter frag = (MyFragmentStateAdapter)vp.getAdapter();
-
-        ScrollView sv = new ScrollView(ctx);
-        sv.addView(child);
-
-        frag.addViewGroup(sv);
+    public static void addTab(View parent, String name, View child) {
+        TabHost tabHost = (TabHost)parent;
+        TabHost.TabSpec tab1Spec = tabHost.newTabSpec(name);
+        tab1Spec.setIndicator(name);
+        tab1Spec.setContent(new TabHost.TabContentFactory() {
+            public View createTabContent(String tag) {
+                return child;
+            }
+        });
+        tabHost.addTab(tab1Spec);
     }
 
     public static class Screen {
@@ -314,7 +257,7 @@ public class LibUI {
         actionBar.setTitle(title);
     }
 
-    private static void screenGoBack() {
+    public static void screenGoBack() {
         Screen screen = screens.remove(screens.size() - 1);
 
         if (screens.size() == 0) {
@@ -459,16 +402,16 @@ public class LibUI {
         }
     }
 
-    private static LibUI.Popup openWindow(String title, int options) {
+    public static LibUI.Popup openWindow(String title, int options) {
         LibUI.Popup popup = new LibUI.Popup(title, options);
         return popup;
     }
 
-    private static void setClickListener(View v, long ptr, long arg1, long arg2) {
+    public static void setClickListener(View v, long ptr, long arg1, long arg2) {
         v.setOnClickListener(new MyOnClickListener(ptr, arg1, arg2));
     }
 
-    private static ViewGroup linearLayout(int orientation) {
+    public static ViewGroup linearLayout(int orientation) {
         LinearLayout layout = new LinearLayout(ctx);
         layout.setOrientation(orientation);
         layout.setLayoutParams(new ViewGroup.LayoutParams(
@@ -477,26 +420,26 @@ public class LibUI {
         return (ViewGroup)layout;
     }
 
-    private static void setPadding(View v, int l, int t, int r, int b) {
+    public static void setPadding(View v, int l, int t, int r, int b) {
         v.setPadding(l, t, r, b);
     }
 
-    private static String getString(String name) {
+    public static String getString(String name) {
         Resources res = ctx.getResources();
         return res.getString(res.getIdentifier(name, "string", ctx.getPackageName()));
     }
 
-    private static View getView(String name) {
+    public static View getView(String name) {
         Resources res = ctx.getResources();
         int id = res.getIdentifier(name, "id", ctx.getPackageName());
         return ((Activity)ctx).findViewById(id);
     }
 
-    private static void toast(String text) {
+    public static void toast(String text) {
         Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show();
     }
 
-    private static void runRunnable(long ptr, long arg1, long arg2) {
+    public static void runRunnable(long ptr, long arg1, long arg2) {
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             @Override
@@ -506,9 +449,9 @@ public class LibUI {
         });
     }
 
-    private static native void callFunction(long ptr, long arg1, long arg2);
+    public static native void callFunction(long ptr, long arg1, long arg2);
 
-    private int dpToPx(int dp) {
+    public int dpToPx(int dp) {
         Resources r = ctx.getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }

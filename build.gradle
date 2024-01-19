@@ -9,7 +9,6 @@ buildscript {
     }
 }
 
-
 plugins {
     id 'com.android.application' version '7.4.2'
 }
@@ -19,25 +18,30 @@ android {
     compileSdkVersion 33
 
     defaultConfig {
+        resConfigs "en"
         minSdk 21
         targetSdk 33
         versionCode 4
         versionName "0.1.2"
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
     externalNativeBuild {
         ndkBuild {
             path file('lib/Android.mk')
         }
     }
+    buildTypes {
+        release {
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+            'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    //implementation 'com.google.android.material:material:1.0.0'
 }
