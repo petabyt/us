@@ -86,18 +86,6 @@ public class LibUI {
         actionBar.setTitle(title);
     }
 
-    private static class MyFragment extends Fragment {
-        ViewGroup view;
-        MyFragment(ViewGroup v) {
-            view = v;
-        }
-        @Nullable
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return view;
-        }
-    }
-
     private static class MyOnClickListener implements View.OnClickListener {
         private long ptr;
         private long arg1;
@@ -182,6 +170,7 @@ public class LibUI {
         return (View)lbl;
     }
 
+    @SuppressWarnings("deprecation")
     public static View tabLayout() {
         TabHost tabHost = new TabHost(ctx, null);
         tabHost.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -205,6 +194,7 @@ public class LibUI {
         return tabHost;
     }
 
+    @SuppressWarnings("deprecation")
     public static void addTab(View parent, String name, View child) {
         TabHost tabHost = (TabHost)parent;
         TabHost.TabSpec tab1Spec = tabHost.newTabSpec(name);

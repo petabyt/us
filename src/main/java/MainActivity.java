@@ -7,6 +7,8 @@ import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.InputStream;
+
 import libui.LibUI;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,13 +16,23 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("app");
     }
 
-	public native static void StartUI(Context ctx);
+	public native static void StartUI(Context ctx, String constitution);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LibUI.buttonBackgroundResource = R.drawable.grey_button;
-        StartUI(this);
+
+        try {
+            InputStream stream = getAssets().open("const.txt");
+            int size = stream.available();
+            byte[] buffer = new byte[size];
+            stream.read(buffer);
+            stream.close();
+
+            StartUI(this, new String(buffer));
+        } catch (Exception e) {
+
+        }
     }
 
    @Override
