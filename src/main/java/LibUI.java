@@ -23,10 +23,8 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.ActionBar;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 
 public class LibUI {
@@ -41,7 +39,7 @@ public class LibUI {
 
     public static Boolean useActionBar = true;
 
-    public static void start(AppCompatActivity act) {
+    public static void start(Activity act) {
         ctx = (Context)act;
         waitUntilActivityLoaded(act);
     }
@@ -60,7 +58,7 @@ public class LibUI {
 
     private static void init() {
         if (useActionBar) {
-            actionBar = ((AppCompatActivity)ctx).getSupportActionBar();
+            actionBar = ((Activity)ctx).getActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -207,8 +205,6 @@ public class LibUI {
             userSleep();
         }
 
-        ActionBar actionBar = ((AppCompatActivity)ctx).getSupportActionBar();
-
         ScrollView layout = new ScrollView(ctx);
         layout.addView(view);
 
@@ -236,7 +232,6 @@ public class LibUI {
         if (screens.size() == 0) {
             ((Activity)ctx).setContentView(origActivity.content);
 
-            ActionBar actionBar = ((AppCompatActivity)ctx).getSupportActionBar();
             actionBar.setTitle(origActivity.title);
             if ((origActivity.displayOptions & ActionBar.DISPLAY_SHOW_HOME) == 1) {
                 actionBar.setDisplayHomeAsUpEnabled(true);
@@ -246,7 +241,6 @@ public class LibUI {
         } else {
             ((Activity)ctx).setContentView(screen.content);
 
-            ActionBar actionBar = ((AppCompatActivity)ctx).getSupportActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(screen.title);
         }
@@ -291,7 +285,6 @@ public class LibUI {
         public void setChild(View v) {
             LinearLayout rel = new LinearLayout(ctx);
 
-            actionBar = ((AppCompatActivity)ctx).getSupportActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(title);
 
@@ -305,7 +298,7 @@ public class LibUI {
             Button back = new Button(ctx);
             back.setText("Close");
             if (buttonBackgroundResource != 0) {
-                back.setBackground(ContextCompat.getDrawable(ctx, buttonBackgroundResource));
+                back.setBackground(ctx.getResources().getDrawable(buttonBackgroundResource));
             }
 
             back.setTextSize(14f);
@@ -331,7 +324,7 @@ public class LibUI {
 
             rel.setOrientation(LinearLayout.VERTICAL);
             if (popupDrawableResource != 0) {
-                rel.setBackground(ContextCompat.getDrawable(ctx, popupDrawableResource));
+                rel.setBackground(ctx.getResources().getDrawable(popupDrawableResource));
             }
             rel.setLayoutParams(new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,

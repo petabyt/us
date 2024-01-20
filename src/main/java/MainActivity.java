@@ -4,14 +4,13 @@ package dev.danielc.us;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
-
-import androidx.appcompat.app.AppCompatActivity;
+import android.app.Activity;
 
 import java.io.InputStream;
 
 import libui.LibUI;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     static {
         System.loadLibrary("app");
     }
@@ -33,10 +32,5 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
 
         }
-    }
-
-   @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return LibUI.handleOptions(item, false);
     }
 }

@@ -103,11 +103,11 @@ static uiTab *get_app(const char *constitution) {
     uiBox *about = uiNewVerticalBox();
     uiBoxSetPadded(about, 1);
     uiBoxAppend(about, uiControl(uiNewLabel("Created with LibUI")), 0);
-    uiBoxAppend(about, uiControl(uiNewLabel("Compiled for all platforms, this APK is 666kb."
-                                            " Download size for single arch is 516kb.")), 0);
+    uiBoxAppend(about, uiControl(uiNewLabel("Compiled for all platforms, this APK is 64kb."
+                                            " Download size for single arch is 59kb.")), 0);
     uiBoxAppend(about, uiControl(uiNewLabel("All the UI you see here was created in C, and the exact"
                                             " same code can be run on Windows, Linux, and MacOS.")), 0);
-    uiBoxAppend(about, uiControl(uiNewButton("That's neat")), 0); // toast something ;)
+    uiBoxAppend(about, uiControl(uiNewButton("That's neat")), 0);
 
     uiTabAppend(tab, "About", uiControl(about));
 
