@@ -109,7 +109,6 @@ static uiTab *get_app(const char *constitution) {
                                             " same code can be run on Windows, Linux, and MacOS.")), 0);
     uiBoxAppend(about, uiControl(uiNewButton("That's neat")), 0); // toast something ;)
 
-
     uiTabAppend(tab, "About", uiControl(about));
 
     return tab;

@@ -163,8 +163,10 @@ static uiBox *new_uibox(int type) {
 
 void view_set_view_text(jobject view, const char *text) {
     JNIEnv *env = uilib.env;
+    jstring jtext = (*uilib.env)->NewStringUTF(uilib.env, text);
     jmethodID method = (*env)->GetMethodID(env, (*env)->GetObjectClass(env, view), "setText", "(Ljava/lang/CharSequence;)V");
-    (*env)->CallVoidMethod(env, view, method, (*uilib.env)->NewStringUTF(uilib.env, text));
+    (*env)->CallVoidMethod(env, view, method, jtext);
+    (*env)->DeleteLocalRef(env, jtext);
 }
 
 static struct uiAndroidControl *view_new_separator() {
@@ -212,22 +214,28 @@ void uiControlDisable(uiControl *c) {
 }
 
 uiButton *uiNewButton(const char *text) {
+    jstring jtext = (*uilib.env)->NewStringUTF(uilib.env, text);
     struct uiAndroidControl *b = new_view_control(uiButtonSignature);
     jobject button = (*uilib.env)->CallStaticObjectMethod(
             uilib.env, uilib.class, uilib.button_m,
-            (*uilib.env)->NewStringUTF(uilib.env, text)
+            jtext
     );
     b->o = button;
+    (*uilib.env)->DeleteLocalRef(uilib.env, jtext);
     return (uiButton *)b;
 }
 
 uiLabel *uiNewLabel(const char *text) {
+    jstring jtext = (*uilib.env)->NewStringUTF(uilib.env, text);
     struct uiAndroidControl *l = new_view_control(uiLabelSignature);
     jobject label = (*uilib.env)->CallStaticObjectMethod(
             uilib.env, uilib.class, uilib.label_m,
-            (*uilib.env)->NewStringUTF(uilib.env, text)
+            jtext
     );
     l->o = label;
+
+    (*uilib.env)->DeleteLocalRef(uilib.env, jtext);
+
     return (uiLabel *)l;
 }
 
@@ -278,7 +286,6 @@ uiEntry *uiNewEntry() {
 
 uiProgressBar *uiNewProgressBar() {
     struct uiAndroidControl *c = new_view_control(uiProgressBarSignature);
-
     JNIEnv *env = uilib.env;
     jclass class = (*env)->FindClass(env, "android/widget/ProgressBar");
     jmethodID constructor = (*env)->GetMethodID(env, class, "<init>", "(Landroid/content/Context;Landroid/util/AttributeSet;I)V");
@@ -366,7 +373,6 @@ void uiBoxAppend(uiBox *b, uiControl *child, int stretchy) {
                            ((struct uiAndroidControl *)child)->o
     );
 
-
     // Controls can optionally request to be set a certain width (only can be set after appending)
     if (ctl->request_width) view_set_dimensions(ctl->o, ctl->request_width, 0);
     if (ctl->request_height) view_set_dimensions(ctl->o, 0, ctl->request_height);
@@ -389,23 +395,27 @@ void uiQueueMain(void (*f)(void *data), void *data) {
 void uiTabAppend(uiTab *t, const char *name, uiControl *c) {
     ((uiAndroidControl *)c)->o = (*uilib.env)->NewGlobalRef(uilib.env, ((uiAndroidControl *)c)->o);
 
+    jstring jname = (*uilib.env)->NewStringUTF(uilib.env, name);
     (*uilib.env)->CallStaticVoidMethod(
             uilib.env, uilib.class, uilib.add_tab_m,
-            t->c.o, (*uilib.env)->NewStringUTF(uilib.env, name), ((uiAndroidControl *)c)->o
+            t->c.o, jname, ((uiAndroidControl *)c)->o
     );
+
+    (*uilib.env)->DeleteLocalRef(uilib.env, jname);
 }
 
 void uiToast(const char *format, ...) {
     va_list args;
     va_start(args, format);
-
     char buffer[256];
-
     vsnprintf(buffer, sizeof(buffer), format, args);
+    jstring jbuffer = (*uilib.env)->NewStringUTF(uilib.env, buffer);
     (*uilib.env)->CallStaticVoidMethod(
             uilib.env, uilib.class, uilib.toast_m,
-            (*uilib.env)->NewStringUTF(uilib.env, buffer)
+            jbuffer
     );
+
+    (*uilib.env)->DeleteLocalRef(uilib.env, jbuffer);
 
     va_end(args);
 }
@@ -417,6 +427,8 @@ const char *uiGet(const char *id) {
     );
 
     const char *c_string = (*uilib.env)->GetStringUTFChars(uilib.env, ret, 0);
+
+    // TODO: env->ReleaseStringUTFChars(str, utf_string);
 
     return c_string;
 }

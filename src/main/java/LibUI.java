@@ -2,49 +2,32 @@ package libui;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.Space;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
 import java.util.ArrayList;
-
-import dev.danielc.us.MainActivity;
 
 public class LibUI {
     public static Context ctx = null;
@@ -64,7 +47,7 @@ public class LibUI {
     }
 
     // Common way of telling when activity is done loading
-    public static void waitUntilActivityLoaded(Activity activity) {
+    private static void waitUntilActivityLoaded(Activity activity) {
         ViewTreeObserver viewTreeObserver = activity.getWindow().getDecorView().getViewTreeObserver();
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -75,14 +58,14 @@ public class LibUI {
         });
     }
 
-    public static void init() {
+    private static void init() {
         if (useActionBar) {
             actionBar = ((AppCompatActivity)ctx).getSupportActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
-    public static void setTitle(String title) {
+    private static void setTitle(String title) {
         actionBar.setTitle(title);
     }
 
@@ -148,7 +131,7 @@ public class LibUI {
         Button b = new Button(ctx);
 
         if (buttonBackgroundResource != 0) {
-            b.setBackground(ContextCompat.getDrawable(ctx, buttonBackgroundResource));
+            //b.setBackground(ContextCompat.getDrawable(ctx, buttonBackgroundResource));
         }
 
         b.setLayoutParams(new LinearLayout.LayoutParams(
